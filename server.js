@@ -17,7 +17,7 @@ app.get('/all', async (req, res) => {
     }
 });
 
-app.post('/addUser', (req, res) => {
+app.post('/add-user/', (req, res) => {
     const newUser = new User(req.body);
     newUser.save();
     if (newUser) {
@@ -37,6 +37,22 @@ app.delete('/find-one-delete/:id', async (req, res) => {
         res.status(500).json({ message: 'something went wrong'});
     }
 });
+
+app.post('/find-one-update/:user', async (req, res) => {
+    try {
+        const result = await User
+            .findOneAndUpdate(
+                { username: req.params.user },
+                { username: "Dumbo Loser"},
+                { new: true }   
+            );
+        res.status(200).json(result);
+        console.log(`Updated: ${result}`);
+    } catch (err) {
+        console.log('Uh oh, something went wrong');
+        res.status(500).json({ message: 'something went wrong' })
+    }
+})
 
 db.once('open', () => {
     app.listen(PORT, () => {
