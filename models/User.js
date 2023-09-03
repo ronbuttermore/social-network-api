@@ -1,30 +1,22 @@
 const { Schema, model } = require('mongoose');
 
-const thoughtSchema = new Schema({
-    thoughtText: {
-        type: String,
-        required: true
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now 
-    },
-    postedBy: {
-        type: String,
-        required: true
-    },
-    reactions: {
-        type: Number
-    }
-});
+var validateEmail = function(email) {
+    var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return re.test(email)
+};
 
 const userSchema = new Schema(
     {
-        thoughts: [thoughtSchema],
+        thoughts: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'thought'
+            }
+        ],
         friends: [
             {
                 type: Schema.Types.ObjectId,
-                ref: 'User',
+                ref: 'user'
             }
         ],
         username:{ 
@@ -37,16 +29,21 @@ const userSchema = new Schema(
             type: String, 
             required: true,
             unique: true, 
+            trim: true,
+            validate: [validateEmail, 'Please fill a valid email address'],
+            match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
         },
-        friendCount: { type: Number, required: true }
     },
     {
-        toJSON: {
-            virtuals: true,
-        },
         id: false,
     }
 );
+
+// userSchema
+//     .virtual('friendsCount')
+//     .get(function () {
+//         return `${this.friends.length}`;
+//     })
 
 const User = model('user', userSchema);
 
