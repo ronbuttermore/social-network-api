@@ -17,6 +17,27 @@ app.get('/all', async (req, res) => {
     }
 });
 
+app.post('/addUser', (req, res) => {
+    const newUser = new User(req.body);
+    newUser.save();
+    if (newUser) {
+        res.status(200).json(newUser);
+    } else {
+        res.status(500).json({ message: 'something went wrong' });
+    }
+});
+
+app.delete('/find-one-delete/:id', async (req, res) => {
+    try {
+        const result = await User.findOneAndDelete({ id: req.params.id });
+        res.status(200).json(result);
+        console.log(`Deleted: ${result}`);
+    } catch (err) {
+        console.log('Uh oh, something went wrong');
+        res.status(500).json({ message: 'something went wrong'});
+    }
+});
+
 db.once('open', () => {
     app.listen(PORT, () => {
         console.log(`API server running on port ${PORT}!`);
