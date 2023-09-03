@@ -43,5 +43,36 @@ module.exports = {
           res.status(500).json(err);
         }
       },
+      async updateThought(req, res) {
+        try {
+           const update = await Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId },
+            { $set: req.body },
+            { new: true }
+           ) 
+        
+      if (!update) {
+        return res.status(404).json({ message: 'No thought with this id!' });
+      }
+
+      res.json(update);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  },
+    async deleteThought(req, res) {
+        try {
+            const removeThought = await Thought.findOneAndRemove({ _id: req.params.thoughtId});
+
+            if (!removeThought) {
+                return res.status(404).json({ message: 'No thought with this id!' });
+              }
+        
+              res.json({ message: 'Thought successfully deleted!' });
+            } catch (err) {
+              res.status(500).json(err);
+            }
+          },
     };
     
